@@ -40,6 +40,49 @@ impl Screen {
     Some(Screen::new(&display_info))
   }
 
+  pub fn capture_all_screens() -> Option<Image> {
+    let screens = Screen::all().unwrap();
+
+    let mut x_min = 0;
+    let mut x_max = 0;
+
+    let mut y_min = 0;
+    let mut y_max = 0;
+
+    // Get the full image size.
+    for screen in &screens {
+      let di = screen.display_info;
+      println!("´DI {di:?}");
+
+      if x_min > di.x {
+        x_min = di.x;
+      }
+
+      if x_max < di.width as i32 + di.x {
+        x_max = di.width as i32 + di.x;
+      }
+
+      if y_min > di.y {
+        y_min = di.y;
+      }
+
+      if y_max < di.height as i32 + di.y {
+        y_max = di.height as i32 + di.y;
+      }
+    }
+
+    println!("x ({x_min},{x_max}), y ({y_min},{y_max}) ");
+
+    let mut tot_buffer: Vec<u8> = Vec::new();
+
+    for screen in screens {
+      let mut image = screen.capture().unwrap();
+      let mut buffer = image.buffer();
+    }
+
+    None
+  }
+
   pub fn capture(&self) -> Option<Image> {
     capture_screen(&self.display_info)
   }

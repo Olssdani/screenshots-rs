@@ -3,7 +3,10 @@ use std::{fs, time::Instant};
 
 fn main() {
   let start = Instant::now();
-  let screens = Screen::all().unwrap();
+
+  Screen::capture_all_screens();
+
+  /*let screens = Screen::all().unwrap();
 
   for screen in screens {
     println!("capturer {:?}", screen);
@@ -21,7 +24,7 @@ fn main() {
 
   let image = screen.capture_area(300, 300, 300, 300).unwrap();
   let buffer = image.buffer();
-  fs::write("target/capture_display_with_point.png", &buffer).unwrap();
+  fs::write("target/capture_display_with_point.png", &buffer).unwrap();*/
 
   println!("运行耗时: {:?}", start.elapsed());
 }
