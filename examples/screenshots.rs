@@ -4,7 +4,9 @@ use std::{fs, time::Instant};
 fn main() {
   let start = Instant::now();
 
-  Screen::capture_all_screens();
+  let mut image = Screen::capture_all_screens().unwrap();
+  let mut buffer = image.buffer();
+  fs::write(format!("target/full.png"), &buffer).unwrap();
 
   /*let screens = Screen::all().unwrap();
 

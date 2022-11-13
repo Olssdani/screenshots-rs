@@ -71,16 +71,30 @@ impl Screen {
       }
     }
 
-    println!("x ({x_min},{x_max}), y ({y_min},{y_max}) ");
+    let tot_width = x_max - x_min;
+    let tot_height = y_max - y_min;
 
     let mut tot_buffer: Vec<u8> = Vec::new();
+    tot_buffer.resize((tot_height * tot_width * 4) as usize, 0);
 
     for screen in screens {
-      let mut image = screen.capture().unwrap();
-      let mut buffer = image.buffer();
+      let di = screen.display_info;
+      if let Some(mut data) = capture_screen_raw(&di) {
+        let data_width = 4 * di.width;
+        for i in 0..di.height {
+          let from = i as i32 * data_width as i32 + di.x * 4;
+          let to = i as i32 * data_width as i32 + di.x * 4 + di.width as i32 * 4;
+          let mut slice = &mut tot_buffer[from as usize..to as usize];
+
+          slice.copy_from_slice(
+            &data[(i as usize * di.width as usize * 4)
+              ..(i as usize * di.width as usize * 4 + di.width as usize * 4)],
+          );
+        }
+      }
     }
 
-    None
+    Image::from_bgra(tot_width as u32, tot_height as u32, tot_buffer).ok()
   }
 
   pub fn capture(&self) -> Option<Image> {
