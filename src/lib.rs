@@ -79,12 +79,16 @@ impl Screen {
 
     for screen in screens {
       let di = screen.display_info;
-      if let Some(mut data) = capture_screen_raw(&di) {
-        let data_width = 4 * di.width;
-        for i in 0..di.height {
-          let from = i as i32 * data_width as i32 + di.x * 4;
-          let to = i as i32 * data_width as i32 + di.x * 4 + di.width as i32 * 4;
-          let mut slice = &mut tot_buffer[from as usize..to as usize];
+
+      let y_norm = di.y + y_min.abs();
+      let x_norm = di.x + x_min.abs();
+
+      if let Some(data) = capture_screen_raw(&di) {
+        let data_width = 4 * tot_width;
+        for i in 0..di.height as i32 {
+          let from = (y_norm + i) * data_width + x_norm * 4;
+          let to = (y_norm + i) * data_width + x_norm * 4 + di.width as i32 * 4;
+          let slice = &mut tot_buffer[from as usize..to as usize];
 
           slice.copy_from_slice(
             &data[(i as usize * di.width as usize * 4)
