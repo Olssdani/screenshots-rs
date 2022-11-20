@@ -43,16 +43,11 @@ impl Screen {
   pub fn capture_all_screens() -> Option<Image> {
     let screens = Screen::all().unwrap();
 
-    let mut x_min = 0;
-    let mut x_max = 0;
+    let (mut x_min, mut x_max, mut y_min, mut y_max) = (0, 0, 0, 0);
 
-    let mut y_min = 0;
-    let mut y_max = 0;
-
-    // Get the full image size.
+    // Screen size
     for screen in &screens {
       let di = screen.display_info;
-      println!("´DI {di:?}");
 
       if x_min > di.x {
         x_min = di.x;
@@ -85,6 +80,7 @@ impl Screen {
 
       if let Some(data) = capture_screen_raw(&di) {
         let data_width = 4 * tot_width;
+
         for i in 0..di.height as i32 {
           let from = (y_norm + i) * data_width + x_norm * 4;
           let to = (y_norm + i) * data_width + x_norm * 4 + di.width as i32 * 4;
