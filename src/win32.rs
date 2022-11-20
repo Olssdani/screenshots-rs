@@ -209,11 +209,8 @@ fn capture(
 }
 
 pub fn capture_screen(display_info: &DisplayInfo) -> Option<Image> {
-  let width = ((display_info.width as f32) * display_info.scale_factor) as i32;
-  let height = ((display_info.height as f32) * display_info.scale_factor) as i32;
-
-  if let Some((data, width, height)) = capture(display_info.id, 0, 0, width, height) {
-    Image::from_bgra(width as u32, height as u32, data).ok()
+  if let Some(data) = capture_screen_raw(display_info) {
+    Image::from_bgra(display_info.width as u32, display_info.height as u32, data).ok()
   } else {
     None
   }
