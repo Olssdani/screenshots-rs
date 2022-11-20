@@ -1,16 +1,19 @@
 use crate::{DisplayInfo, Image};
 use core_graphics::display::CGDisplay;
 
-pub fn capture_screen(display_info: &DisplayInfo) -> Option<Image> {
+pub fn capture_screen_raw(display_info: &DisplayInfo) -> Option<Vec<u8>> {
   let cg_display = CGDisplay::new(display_info.id);
   let cg_image = cg_display.image()?;
 
-  Image::from_bgra(
-    cg_image.width() as u32,
-    cg_image.height() as u32,
-    Vec::from(cg_image.data().bytes()),
-  )
-  .ok()
+  Some(Vec::from(cg_image.data().bytes()))
+}
+
+pub fn capture_screen(display_info: &DisplayInfo) -> Option<Image> {
+  if let Some(data) = capture_screen_raw(display_info) {
+    Image::from_bgra(display_info.width, display_info.height, data).ok()
+  } else {
+    None
+  }
 }
 
 pub fn capture_screen_area(
